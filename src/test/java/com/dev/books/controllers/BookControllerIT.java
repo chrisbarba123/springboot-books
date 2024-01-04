@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
@@ -59,6 +61,22 @@ public class BookControllerIT {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.isbn").value(book.getIsbn()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(book.getTitle()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.author").value(book.getAuthor()));
+
+    }
+
+    @Test
+    public void testThatRetrieveAllBooksReturnsHttp200WhenExists() throws Exception {
+        final Book book = TestData.testBook();
+
+        bookService.create(book);
+
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/books"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].isbn").value(book.getIsbn()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].title").value(book.getTitle()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].author").value(book.getAuthor()));
+
 
     }
 }

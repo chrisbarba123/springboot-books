@@ -21,13 +21,13 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    @PutMapping(path = "/books/{isbn}")
-    public ResponseEntity<Book> createBook(@PathVariable final String isbn, @RequestBody final Book book) {
-        book.setIsbn(isbn);
-        final Book savedBook = bookService.create(book);
-        final ResponseEntity<Book> response = new ResponseEntity<>(savedBook, HttpStatus.CREATED);
-        return response;
-    }
+//    @PutMapping(path = "/books/{isbn}")
+//    public ResponseEntity<Book> createBook(@PathVariable final String isbn, @RequestBody final Book book) {
+//        book.setIsbn(isbn);
+//        final Book savedBook = bookService.create(book);
+//        final ResponseEntity<Book> response = new ResponseEntity<>(savedBook, HttpStatus.CREATED);
+//        return response;
+//    }
 
     @GetMapping(path = "/books/{isbn}")
     public ResponseEntity<Book> readBook(@PathVariable final String isbn) {
@@ -43,5 +43,25 @@ public class BookController {
         final List<Book> foundBooks = bookService.findAllBooks();
 
         return new ResponseEntity<>(foundBooks, HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/books/{isbn}")
+    public ResponseEntity<Book> createUpdateBook(@PathVariable final String isbn, @RequestBody final Book book) {
+        book.setIsbn(isbn);
+
+        final boolean isBookExists = bookService.isBookExists(book);
+        final Book savedBook = bookService.save(book);
+
+        if (isBookExists) {
+            return new ResponseEntity<Book>(savedBook, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Book>(savedBook, HttpStatus.CREATED);
+        }
+    }
+
+    @DeleteMapping(path = "/books/{isbn}")
+    public ResponseEntity deleteBook(@PathVariable final String isbn) {
+        bookService.deleteBookById(isbn);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
