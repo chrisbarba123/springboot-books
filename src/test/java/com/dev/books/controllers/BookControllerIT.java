@@ -50,12 +50,15 @@ public class BookControllerIT {
     }
 
     @Test
-    public void testThatRetrieveBookReturnsBookWhenExists() throws Exception {
+    public void testThatRetrieveBookReturnsHttp200WhenExists() throws Exception {
         final Book book = TestData.testBook();
         bookService.create(book);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/books/" + book.getIsbn()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.isbn").value(book.getIsbn()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(book.getTitle()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.author").value(book.getAuthor()));
 
     }
 }

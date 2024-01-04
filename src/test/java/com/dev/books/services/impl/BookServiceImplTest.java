@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.dev.books.TestData.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.dev.books.TestData.testBook;
@@ -52,7 +54,8 @@ public class BookServiceImplTest {
 
     }
 
-    @Test public void testThatFindByIdReturnsBookWithCorrectId() {
+    @Test
+    public void testThatFindByIdReturnsBookWithCorrectId() {
         final BookEntity bookEntity = testBookEntity();
         final Book book = testBook();
         final String isbn = book.getIsbn();
@@ -63,5 +66,23 @@ public class BookServiceImplTest {
         final Optional<Book> result = underTest.findById(isbn);
         assertEquals( Optional.of(book),result);
     }
+
+    @Test
+    public void testThatListBooksReturnEmptyListWhenNoBooksExist() {
+        when(bookRepository.findAll()).thenReturn(new ArrayList<BookEntity>());
+
+        final List<Book> result = underTest.findAllBooks();
+
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testThatListBooksReturnAllBooksWhenBooksExist() {
+        when(bookRepository.findAll()).thenReturn(List.of(testBookEntity(), testBookEntity()));
+
+        final List<Book> result = underTest.findAllBooks();
+        assertEquals(2, result.size());
+    }
+
 
 }
