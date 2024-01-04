@@ -8,7 +8,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import com.dev.books.TestData.*;
 
+import java.util.Optional;
+
+import static com.dev.books.TestData.testBook;
+import static com.dev.books.TestData.testBookEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -23,18 +28,9 @@ public class BookServiceImplTest {
 
     @Test
     public void testThatBookIsSaved() {
-        final Book book = Book.builder()
-                .isbn("02345678")
-                .author("Virginia Woolf")
-                .title("The Waves")
-                .build();
+        final Book book = testBook();
 
-        final BookEntity bookEntity = BookEntity
-                .builder()
-                .isbn("02345678")
-                .author("Virginia Woolf")
-                .title("The Waves")
-                .build();
+        final BookEntity bookEntity = testBookEntity();
 
         when(bookRepository.save(eq(bookEntity))).thenReturn(bookEntity);
 
@@ -42,6 +38,30 @@ public class BookServiceImplTest {
 
         assertEquals(book, result);
 
+    }
+
+    @Test
+    public void testThatFindByIdReturnsEmptyWhenNoBook() {
+        final String isbn = "12515021";
+
+        when(bookRepository.findById(eq(isbn))).thenReturn(Optional.empty());
+
+        final Optional<Book> result = underTest.findById(isbn);
+
+        assertEquals(Optional.empty(), result);
+
+    }
+
+    @Test public void testThatFindByIdReturnsBookWithCorrectId() {
+        final BookEntity bookEntity = testBookEntity();
+        final Book book = testBook();
+        final String isbn = book.getIsbn();
+
+
+        when(bookRepository.findById(eq(isbn))).thenReturn(Optional.of(bookEntity));
+
+        final Optional<Book> result = underTest.findById(isbn);
+        assertEquals( Optional.of(book),result);
     }
 
 }
